@@ -1,22 +1,26 @@
 # Made with love by Karlpy
+import grequests
 import requests
 import csv
 import json
 
-set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar'
+set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
 
-# loop through all URLs
-id_range = 10000000
+# Cedula (id) range
+id_range = 8000000
 
 with open ('datos.csv','w',newline='') as csvfile:
-   writer=csv.writer(csvfile)
-   writer.writerow(['cedula', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'nombreCompleto'])
-   for id in range(id_range):
-       payload = {"cedula": id}
-       result = requests.get(set_url, params=payload)
-       res_json = result.json()
-       if(res_json["presente"] == False):
+    writer=csv.writer(csvfile)
+    writer.writerow(['cedula', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'nombreCompleto'])
+    urls = [set_url + str(ced) for ced in range(id_range)]
+    requests_unsent = (grequests.get(u) for u in urls)
+    requests_iterable = grequests.imap(requests_unsent, size=5)
+
+    # do it asynchronously
+    for response in requests_iterable:
+        response_json = response.json()
+        if(response_json["presente"] == False):
             print("No existe el nro de cedula")
-       else:
-           print(res_json["resultado"])
-           writer.writerow(res_json["resultado"].values())
+        else:
+            print(response_json["resultado"])
+            writer.writerow(response_json["resultado"].values())
