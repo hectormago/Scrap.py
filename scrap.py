@@ -1,6 +1,5 @@
 # Made with love by Karlpy
 import grequests
-import requests
 import csv
 import json
 
