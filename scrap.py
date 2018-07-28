@@ -6,14 +6,14 @@ import json
 set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
 
 # Cedula (id) range
-id_range = 8000000
+id_range = 100
 
 with open ('datos.csv','w',newline='') as csvfile:
     writer=csv.writer(csvfile)
     writer.writerow(['cedula', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'nombreCompleto'])
     urls = [set_url + str(ced) for ced in range(id_range)]
     requests_unsent = (grequests.get(u) for u in urls)
-    requests_iterable = grequests.imap(requests_unsent, size=5)
+    requests_iterable = grequests.imap(requests_unsent, size=10)
 
     # do it asynchronously
     for response in requests_iterable:
