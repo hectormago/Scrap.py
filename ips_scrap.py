@@ -1,13 +1,13 @@
 # Made with love by Karlpy
 import grequests, csv, json
 
-set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
+ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derecho_externo.php'
 
 # Cedula (id) range
 id_range = 10
-urls = [set_url + str(ced) for ced in range(id_range)]
+urls = [ips_url + str(ced) for ced in range(id_range)]
 
-with open ('datos.csv','w',newline='') as csvfile:
+with open ('datos_ips.csv','w',newline='') as csvfile:
     writer=csv.writer(csvfile)
     writer.writerow(['cedula', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'nombreCompleto'])
 
