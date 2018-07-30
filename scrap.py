@@ -1,5 +1,6 @@
 # Made with love by Karlpy
-import grequests, csv, json
+import grequests, json
+import unicodecsv as csv
 
 set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
 
@@ -7,7 +8,7 @@ set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula=
 id_range = 10
 urls = [set_url + str(ced) for ced in range(id_range)]
 
-with open ('datos.csv','w',newline='') as csvfile:
+with open ('datos.csv','wb') as csvfile:
     writer=csv.writer(csvfile)
     writer.writerow(['cedula', 'nombres', 'apellidoPaterno', 'apellidoMaterno', 'nombreCompleto'])
 
