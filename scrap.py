@@ -4,8 +4,6 @@ import grequests, csv, json
 set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
 
 # Cedula (id) range
-start = 2649136
-stop = 8000000
 start = 1
 stop = 50
 
