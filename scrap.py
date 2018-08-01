@@ -4,8 +4,8 @@ import grequests, csv, json
 set_url = 'https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula='
 
 # Cedula (id) range
-start = 1
-stop = 20
+start = 2649136
+stop = 8000000
 urls = [set_url + str(ced) for ced in range(start, stop)]
 
 with open ('datos.csv','w',newline='') as csvfile:
