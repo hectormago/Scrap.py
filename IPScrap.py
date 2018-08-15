@@ -13,7 +13,7 @@ param_dict_list = []
 for c in range(start, stop):
     param_dict_list.append({'nro_cic':str(c), 'elegir':'', 'envio':'ok','recuperar':'Recuperar'})
 
-with open ('datos.csv','w',newline='') as csvfile:
+with open ('datos_ips.csv','w',newline='') as csvfile:
     writer=csv.writer(csvfile)
     writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida'])
 

@@ -10,3 +10,7 @@ cd Scrap.py
 pip install -r require.txt  
 python scrap.py
 ```
+or 
+```
+python IPScrap.py
+```
