@@ -6,20 +6,21 @@ ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derech
 
 # Cedula (id) range
 start = 1
-stop = 10
+stop = 100
 
 param_dict_list = []
 
 for c in range(start, stop):
     param_dict_list.append({'nro_cic':str(c), 'elegir':'', 'envio':'ok','recuperar':'Recuperar'})
 
-with open ('datos_ips.csv','w',newline='') as csvfile:
+with open ('datos_ips_sync.csv','w',newline='') as csvfile:
     writer=csv.writer(csvfile)
     writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida'])
 
     session = requests.Session()
     for ced in param_dict_list:
         try:
+            cedula = ced['nro_cic']
             r = session.post(ips_url, data = ced)
             root = html.fromstring(r.text)
             nro_documento = root.xpath("/html/body/center[2]/form/table[2]/tr[2]/td[2]")[0].text.strip()
@@ -36,5 +37,5 @@ with open ('datos_ips.csv','w',newline='') as csvfile:
             writer.writerow([nro_documento, nombres, apellidos, fecha_nacim, sexo, tipo_aseg, beneficiarios_activos, enrolado, vencimiento_de_fe_de_vida])
 
         except Exception as e:
-            print("Cedula %s no existe" %nro_documento)
+            print("Cedula %s no existe" %cedula)
             continue
