@@ -6,12 +6,9 @@ ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derech
 
 # Cedula (id) range
 start = 1
-stop = 11
+stop = 50
 
-param_dict_list = []
-
-for c in range(start, stop):
-    param_dict_list.append({'nro_cic':str(c), 'elegir':'', 'envio':'ok','recuperar':'Recuperar'})
+param_generator = ({'nro_cic':str(c), 'elegir':'', 'envio':'ok','recuperar':'Recuperar'} for c in range(start, stop))
 
 async def aiohttp_post_to_page(data):
     connector = aiohttp.TCPConnector(limit_per_host=15)
@@ -28,10 +25,10 @@ async def fetch_data(param):
     return t, ced, result_html
 
 async def main():
-    futures = [fetch_data(param) for param in param_dict_list]
+    futures = [fetch_data(param) for param in param_generator]
     # done, pending = await asyncio.wait(futures, timeout=5)
 
-    with open ('500k.csv','w',newline='',encoding='utf-8') as csvfile:
+    with open ('datosips.csv','w',newline='',encoding='utf-8') as csvfile:
         hp = etree.HTMLParser(encoding='utf-8')
         writer=csv.writer(csvfile)
         writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida','nro_titular', 'titular', 'estado_titular', 'meses_de_aporte_titular','vencimiento_titular','ultimo_periodo_abonado_titular'])
