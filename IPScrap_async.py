@@ -21,15 +21,17 @@ async def aiohttp_post_to_page(data):
             return await response.text()
 
 async def fetch_data(param):
+    start = time.time()
     result_html = await aiohttp_post_to_page(param)
     ced = param['nro_cic']
-    return ced, result_html
+    t = (time.time() - start)
+    return t, ced, result_html
 
 async def main():
     futures = [fetch_data(param) for param in param_dict_list]
     # done, pending = await asyncio.wait(futures, timeout=5)
 
-    with open ('datos_ips_async.csv','w',newline='',encoding='utf-8') as csvfile:
+    with open ('500k.csv','w',newline='',encoding='utf-8') as csvfile:
         hp = etree.HTMLParser(encoding='utf-8')
         writer=csv.writer(csvfile)
         writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida','nro_titular', 'titular', 'estado_titular', 'meses_de_aporte_titular','vencimiento_titular','ultimo_periodo_abonado_titular'])
@@ -38,7 +40,7 @@ async def main():
             #print(future.result())
             try:
                 result = await future
-                ced, result_html = result
+                t, ced, result_html = result
                 root = html.fromstring(result_html, parser=hp)
                 nro_documento = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[2]")[0].text.strip()
                 nombres = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[3]")[0].text.strip()
@@ -57,7 +59,7 @@ async def main():
                 vencimiento_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[5]")[0].text.strip()
                 ultimo_periodo_abonado_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[6]")[0].text.strip()
 
-                print(nro_documento, nombres, apellidos)
+                print('{}, {}, {} retornado en {:.2f} segundos'.format(nro_documento, nombres, apellidos, t))
                 writer.writerow([nro_documento, nombres, apellidos, fecha_nacim, sexo, tipo_aseg, beneficiarios_activos, enrolado, vencimiento_de_fe_de_vida, nro_titular, titular, estado_titular, meses_de_aporte_titular, vencimiento_titular, ultimo_periodo_abonado_titular])
 
             except Exception as e:
