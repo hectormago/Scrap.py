@@ -6,7 +6,7 @@ ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derech
 
 # Cedula (id) range
 start = 1
-stop = 100
+stop = 11
 
 param_dict_list = []
 
@@ -29,28 +29,36 @@ async def main():
     futures = [fetch_data(param) for param in param_dict_list]
     # done, pending = await asyncio.wait(futures, timeout=5)
 
-    with open ('datos_ips_async.csv','w',newline='') as csvfile:
+    with open ('datos_ips_async.csv','w',newline='',encoding='utf-8') as csvfile:
+        hp = etree.HTMLParser(encoding='utf-8')
         writer=csv.writer(csvfile)
-        writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida'])
+        writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida','nro_titular', 'titular', 'estado_titular', 'meses_de_aporte_titular','vencimiento_titular','ultimo_periodo_abonado_titular'])
         start = time.time()
         for i, future in enumerate(asyncio.as_completed(futures)):
             #print(future.result())
             try:
                 result = await future
                 ced, result_html = result
-                root = html.fromstring(result_html)
-                nro_documento = root.xpath("/html/body/center[2]/form/table[2]/tr[2]/td[2]")[0].text.strip()
-                nombres = root.xpath("/html/body/center[2]/form/table[2]/tr[2]/td[3]")[0].text.strip()
-                apellidos = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[4]')[0].text.strip()
-                fecha_nacim = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[5]')[0].text.strip()
-                sexo = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[6]')[0].text.strip()
-                tipo_aseg = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[7]')[0].text.strip()
-                beneficiarios_activos = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[8]')[0].text.strip()
-                enrolado = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[9]')[0].text.strip()
-                vencimiento_de_fe_de_vida = root.xpath('/html/body/center[2]/form/table[2]/tr[2]/td[10]')[0].text.strip()
+                root = html.fromstring(result_html, parser=hp)
+                nro_documento = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[2]")[0].text.strip()
+                nombres = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[3]")[0].text.strip()
+                apellidos = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[4]")[0].text.strip()
+                fecha_nacim = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[5]")[0].text.strip()
+                sexo = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[6]")[0].text.strip()
+                tipo_aseg = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[7]")[0].text.strip()
+                beneficiarios_activos = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[8]")[0].text.strip()
+                enrolado = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[9]")[0].text.strip()
+                vencimiento_de_fe_de_vida = root.xpath(u"/html/body/center[2]/form/table[2]/tr[2]/td[10]")[0].text.strip()
+
+                nro_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[1]")[0].text.strip()
+                titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[2]")[0].text.strip()
+                estado_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[3]")[0].text.strip()
+                meses_de_aporte_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[4]")[0].text.strip()
+                vencimiento_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[5]")[0].text.strip()
+                ultimo_periodo_abonado_titular = root.xpath(u"/html/body/center[2]/form/table[3]/tr[2]/td[6]")[0].text.strip()
 
                 print(nro_documento, nombres, apellidos)
-                writer.writerow([nro_documento, nombres, apellidos, fecha_nacim, sexo, tipo_aseg, beneficiarios_activos, enrolado, vencimiento_de_fe_de_vida])
+                writer.writerow([nro_documento, nombres, apellidos, fecha_nacim, sexo, tipo_aseg, beneficiarios_activos, enrolado, vencimiento_de_fe_de_vida, nro_titular, titular, estado_titular, meses_de_aporte_titular, vencimiento_titular, ultimo_periodo_abonado_titular])
 
             except Exception as e:
                 print("Cedula: %s no existe" %(ced))
