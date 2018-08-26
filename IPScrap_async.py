@@ -1,8 +1,7 @@
 # Made with love by Karlpy
-import requests, csv, json, asyncio, aiohttp
+import requests, csv, json, asyncio, aiohttp, time
 from lxml import etree, html
 from concurrent.futures import FIRST_COMPLETED
-
 ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derecho_externo.php'
 
 # Cedula (id) range
@@ -33,7 +32,7 @@ async def main():
     with open ('datos_ips_async.csv','w',newline='') as csvfile:
         writer=csv.writer(csvfile)
         writer.writerow(['nro_documento', 'nombres', 'apellidos', 'fecha_nacim', 'sexo', 'tipo_aseg', 'beneficiarios_activos', 'enrolado','vencimiento_de_fe_de_vida'])
-
+        start = time.time()
         for i, future in enumerate(asyncio.as_completed(futures)):
             #print(future.result())
             try:
@@ -56,5 +55,6 @@ async def main():
             except Exception as e:
                 print("Cedula: %s no existe" %(ced))
                 continue
+        print("Process took: {:.2f} seconds".format(time.time() - start))
 
 asyncio.run(main())
