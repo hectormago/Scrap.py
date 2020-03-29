@@ -1,12 +1,14 @@
 # Made with love by Karlpy
+# Update: Ya no funciona el scrapper porque ahora se puso un Captcha en el webservice
+
 import requests, csv, json
 from lxml import etree, html
 
 ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derecho_externo.php'
 
 # Cedula (id) range
-start = 1
-stop = 100
+start = 3000260
+stop = 3000270
 
 param_dict_list = []
 

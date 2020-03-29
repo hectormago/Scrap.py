@@ -1,7 +1,8 @@
 # Made with love by Karlpy
-import requests, csv, json, asyncio, aiohttp, time
+# Update: Ya no funciona el scrapper porque ahora se puso un Captcha en el webservice
+
+import requests, csv, json, asyncio, time
 from lxml import etree, html
-from concurrent.futures import FIRST_COMPLETED
 from aiohttp import ClientSession
 ips_url = 'http://servicios.ips.gov.py/consulta_asegurado/comprobacion_de_derecho_externo.php'
 
