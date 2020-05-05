@@ -2,32 +2,20 @@
 import requests
 import pymongo
 from pymongo import MongoClient
-from dataclasses import dataclass
 from lxml import etree
 from io import StringIO
 
 siis_url = 'https://sistema.siis.gov.py/fuentes_externas/legajo_participante.php?p_documento='
 
 # Cedula (id) range
-start = 3000260
-stop = 3000370
+start = 99745
+stop = 10000000
 
 cedula_generator = (i for i in range(start, stop + 1))
 
 client = MongoClient()
 db = client.siis
-collection = db.siis_data
-
-@dataclass
-class DatosPersona:
-    apellido: str
-    nombre: str
-    nro_documento: str
-    sexo: str
-    nacionalidad: str
-    lugar_de_nacimiento: str
-    fecha_nacimiento: str
-    edad: int
+siisdb = db.siis_data
 
 session = requests.Session()
 parser = etree.HTMLParser()
@@ -39,20 +27,20 @@ for ced in cedula_generator:
         html = req.content.decode("utf-8")
         tree = etree.parse(StringIO(html), parser=parser)
         
-        apellido = tree.find('//*[@id="e_apellido"]').attrib['value']
-        nombre = tree.find('//*[@id="e_nombre"]').attrib['value']
-        nro_documento = tree.find('//*[@id="e_documento"]').attrib['value']
-        sexo = tree.find('//*[@id="e_sexo"]').attrib['value']
-        nacionalidad = tree.find('//*[@id="e_nacionalidad"]').attrib['value']
-        lugar_de_nacimiento = tree.find('//*[@id="e_lugar"]').attrib['value']
-        fecha_nacimiento = tree.find('//*[@id="e_fec_nac"]').attrib['value']
-        edad = tree.find('//*[@id="e_edad"]').attrib['value']
+        persona_dict = {}
+        persona_dict['apellido'] = tree.find('//*[@id="e_apellido"]').attrib['value'].strip()
+        persona_dict['nombre'] = tree.find('//*[@id="e_nombre"]').attrib['value'].strip()
+        persona_dict['nro_documento'] = tree.find('//*[@id="e_documento"]').attrib['value'].strip()
+        persona_dict['sexo'] = tree.find('//*[@id="e_sexo"]').attrib['value'].strip()
+        persona_dict['nacionalidad'] = tree.find('//*[@id="e_nacionalidad"]').attrib['value'].strip()
+        persona_dict['lugar_de_nacimiento'] = tree.find('//*[@id="e_lugar"]').attrib['value'].strip()
+        persona_dict['fecha_nacimiento'] = tree.find('//*[@id="e_fec_nac"]').attrib['value'].strip()
+        persona_dict['edad'] = tree.find('//*[@id="e_edad"]').attrib['value'].strip()
 
-        persona = DatosPersona(apellido, nombre, nro_documento, sexo, nacionalidad, lugar_de_nacimiento, fecha_nacimiento, edad)
-        if persona.apellido != None:
-            print('add to mongodb')
-            print(persona)
-
+        if (persona_dict['apellido'] != None) and (persona_dict['apellido'] != ''):
+            print(f'{persona_dict["nro_documento"]} {persona_dict["nombre"]} {persona_dict["apellido"]}')
+            siisdb.insert_one(persona_dict)
+            # print(persona_dict)
 
     except Exception as e:
         print(e)
