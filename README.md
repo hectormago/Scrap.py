@@ -7,11 +7,6 @@
 ```
 git clone https://github.com/Karlheinzniebuhr/Scrap.py/
 cd Scrap.py  
-pip install -r require.txt  
-python scrap.py
+python "Script Name"  
 ```
-or 
-```
-python IPScrap.py
-```
-# Use with the best Python yet, Python 3.7
+# Made for Python 3.8.2

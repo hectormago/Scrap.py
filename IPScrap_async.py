@@ -26,7 +26,6 @@ async def fetch_data(sem, param, session):
 
 async def main():   
     # done, pending = await asyncio.wait(futures, timeout=5)
-
     with open ('100k.csv','w',newline='',encoding='utf-8') as csvfile:
         hp = etree.HTMLParser(encoding='utf-8')
         writer=csv.writer(csvfile)
